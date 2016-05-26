@@ -16,6 +16,47 @@ exports.load = function(req, res, next, quizId) {
         .catch(function(error) { next(error); });
 };
 
+exports.autoresComentarios = function(req, res, next, quizId) {
+  /*models.User.findAll().then(function(usuarios){
+    var autoresComent = new Object;
+    if (usuarios) {
+            for (var i in req.quiz.Comments) {
+              for (var j in usuarios)  {
+                if (usuarios[j].id === req.quiz.Comments.AuthorId) {
+                  autoresComent[i] = usuarios[j].username;
+                }
+              }
+
+            }
+         req.quiz.autoresComent = autoresComent;   
+          next();
+        } else { 
+            throw new Error('No users');
+          }
+        }) .catch(function(error) { next(error); });*/
+
+  models.User.findAll().then(function(usuarios){
+    var autoresComent = new Object;
+    if(usuarios){
+      for (var i in req.quiz.Comments){
+        for (var j in usuarios){
+          if (req.quiz.Comments[i].AuthorId === usuarios[j].id){
+            autoresComent[i] = usuarios[j].username;
+          }
+        }
+        
+      }
+      req.quiz.autoresComent = autoresComent;
+      next();
+    } else {
+      next(new Error('No hay usuarios'));
+    }
+  })
+  .catch(function(error){
+    req.flash('error','Error al cargar comentarios');
+  });
+
+};
 
 // MW que permite acciones solamente si al usuario logeado es admin o es el autor del quiz.
 exports.ownershipRequired = function(req, res, next){
@@ -49,9 +90,10 @@ exports.index = function(req, res, next) {
 exports.show = function(req, res, next) {
 
 	var answer = req.query.answer || '';
+  var autores = req.quiz.autoresComent;
 
 	res.render('quizzes/show', {quiz: req.quiz,
-								answer: answer});
+								              answer: answer});
 };
 
 

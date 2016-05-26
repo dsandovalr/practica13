@@ -14,7 +14,8 @@ router.get('/', function(req, res, next) {
 
 
 // Autoload de parametros
-router.param('quizId', quizController.load);  // autoload :quizId
+router.param('quizId', quizController.load);
+router.param('quizId', quizController.autoresComentarios);  // autoload :quizId
 router.param('userId', userController.load);  // autoload :userId
 router.param('commentId', commentController.load);  // autoload :commentId
 
